@@ -1,4 +1,4 @@
-import difflib
+import Levenshtein
 
 
 path = 'sequences.fasta'
@@ -14,32 +14,34 @@ with open(path) as f:
 
 f.close()
 
-str_array1 = s.split('>')[1].splitlines()[1:]
+covid_nucleic_acid_sequence_array = s.split('>')
 
-str1 = ""
-for x in str_array1:
-    str1 += x
+covid_nucleic_acid_sequence_array_length = len(covid_nucleic_acid_sequence_array)
+for covid_nucleic_acid_sequence in covid_nucleic_acid_sequence_array:
+#  print(covid_nucleic_acid_sequence_array_length)
+  str_array1 = covid_nucleic_acid_sequence_array[1].splitlines()[1:]
 
-print(str1)
+  str1 = ""
+  for x in str_array1:
+      str1 += x
 
-str_array2 = s.split('>')[22].splitlines()[1:]
+#  print(str1)
 
-str2 = ""
-for x in str_array2:
-    str2 += x
+  str_array2 = covid_nucleic_acid_sequence.splitlines()[1:]
 
-print(str2)
+  str2 = ""
+  for x in str_array2:
+      str2 += x
 
-r = difflib.SequenceMatcher(None, str1, str2).ratio()
-print( "match ratio:" +  str(r))
-
-import Levenshtein
-lev_dist = Levenshtein.distance(str1, str2)
-print(lev_dist)
-
-divider = len(str1) if len(str1) > len(str2) else len(str2)
-lev_dist = lev_dist / divider
-lev_dist = 1 - lev_dist
+#  print(str2)
 
 
-print(lev_dist)
+  lev_dist = Levenshtein.distance(str1, str2)
+  print(lev_dist)
+
+  divider = len(str1) if len(str1) > len(str2) else len(str2)
+  lev_dist = lev_dist / divider
+  lev_dist = 1 - lev_dist
+
+
+  print(lev_dist)
