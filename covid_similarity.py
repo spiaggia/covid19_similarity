@@ -1,3 +1,4 @@
+
 import Levenshtein
 import pandas as pd
 
@@ -45,7 +46,7 @@ covid_nucleic_acid_sequence_array = s.split('>')
 
 covid_nucleic_acid_sequence_array_length = len(covid_nucleic_acid_sequence_array)
 
-for num in range(1,5):
+for num in range(1,10):
   covid_nucleic_acid_sequence_data = covid_nucleic_acid_sequence_array[num]
   covid_nucleic_acid_sequence_definition = covid_nucleic_acid_sequence_data.splitlines()[0]
   version = covid_nucleic_acid_sequence_definition.split(" ")[0]
@@ -91,7 +92,27 @@ for index, row1 in sequence_df.iterrows():
       s = pd.Series([version1, country_code1, region_name1, version2, country_code2, region_name2, lev_dist], index=dist_df.columns)
       print(s)
       dist_df = dist_df.append(s, ignore_index=True )
-print(dist_df)
-print(dist_df.sort_values('dist'))
+#print(dist_df)
+#print(dist_df.sort_values('dist'))
+
+network_df = dist_df.groupby('version1').min().reset_index()
+print(network_df)
+
+import networkx as nx
+import pandas as pd
+import matplotlib.pyplot as plt
 
 
+feature_1 = network_df["version1"]
+feature_2 = network_df["version2"]
+dist = network_df["dist"]
+
+df = pd.DataFrame({'f1': feature_1, 'f2': feature_2, 'score': dist})
+print(df)
+
+G = nx.from_pandas_edgelist(df=df, source='f1', target='f2', edge_attr='score')
+pos = nx.spring_layout(G, k=10)  # For better example looking
+nx.draw(G, pos, with_labels=True)
+labels = {e: G.edges[e]['score'] for e in G.edges}
+nx.draw_networkx_edge_labels(G, pos, edge_labels=labels)
+plt.show()
