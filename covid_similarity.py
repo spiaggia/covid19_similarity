@@ -1,18 +1,32 @@
 import Levenshtein
 import pandas as pd
 
-
-def pick_place_name(s):
-  place = s
+def get_country_code(s):
+  country_code = "UNKNOWN" 
+  list = s.split("/")
+  if "human" in list:
+    country_code = list[list.index("human") + 1]
   if "Wuhan" in s:
-    place = "Wuhan"
-  if "TWN" in s:
-    place = "TWN"
+    country_code = "CHN"
   if "USA" in s:
-    place = "USA"
-  return place
+    country_code = "USA"
+  return country_code 
 
-df = pd.DataFrame(columns=['place1', 'place2', 'dist'])
+
+def get_region_name(s):
+  region_name = "UNKNOWN" 
+  list = s.split("/")
+  if "human" in list:
+    region_name = list[list.index("human") + 2][:10]
+  if "Wuhan" in s:
+    region_name = "Wuhan"
+  return region_name 
+
+
+
+sequence_df = pd.DataFrame(columns=['version', 'country_code', 'region_name', 'sequence'])
+dist_df = pd.DataFrame(columns=['version1', 'country_code1', 'region1', 'version2', 'country_code2', 'region2', 'dist'])
+
 
 path = 'sequences.fasta'
 
@@ -31,41 +45,53 @@ covid_nucleic_acid_sequence_array = s.split('>')
 
 covid_nucleic_acid_sequence_array_length = len(covid_nucleic_acid_sequence_array)
 
-for num1 in range(1,10):
-  covid_nucleic_acid_sequence_data1 = covid_nucleic_acid_sequence_array[num1]
-  covid_nucleic_acid_sequence_definition1 = covid_nucleic_acid_sequence_data1.splitlines()[0]
-  str_array1 = covid_nucleic_acid_sequence_data1.splitlines()[1:]
+for num in range(1,5):
+  covid_nucleic_acid_sequence_data = covid_nucleic_acid_sequence_array[num]
+  covid_nucleic_acid_sequence_definition = covid_nucleic_acid_sequence_data.splitlines()[0]
+  version = covid_nucleic_acid_sequence_definition.split(" ")[0]
+  country_code = get_country_code(covid_nucleic_acid_sequence_definition)
+  region_name = get_region_name(covid_nucleic_acid_sequence_definition)
+  
+  str_array = covid_nucleic_acid_sequence_data.splitlines()[1:]
 
-  covid_nucleic_acid_sequence1 = ""
-  for x in str_array1:
-      covid_nucleic_acid_sequence1 += x
+  covid_nucleic_acid_sequence = ""
+  for x in str_array:
+      covid_nucleic_acid_sequence += x
+  
+  sequence_s = pd.Series([version, country_code, region_name, covid_nucleic_acid_sequence], index=sequence_df.columns) 
+  sequence_df = sequence_df.append(sequence_s, ignore_index=True) 
 
-#  print(covid_nucleic_acid_sequence1)
-  for num2 in range(1,10):
-    covid_nucleic_acid_sequence_data2 = covid_nucleic_acid_sequence_array[num2]
-    covid_nucleic_acid_sequence_definition2 = covid_nucleic_acid_sequence_data2.splitlines()[0]
-    str_array2 = covid_nucleic_acid_sequence_data2.splitlines()[1:]
+#pd.options.display.max_colwidth = 1000
+pd.set_option('display.max_rows', 3000)
+print(sequence_df)
 
+for index, row1 in sequence_df.iterrows():
+  
+  version1 = row1.version
+  for index2, row2 in sequence_df.iterrows():
+    version2 = row2.version
+    if version1 != version2:
 
-    covid_nucleic_acid_sequence2 = ""
-    for x in str_array2:
-        covid_nucleic_acid_sequence2 += x
+      country_code1 = row1["country_code"] 
+      country_code2 = row2["country_code"] 
 
-  #  print(covid_nucleic_acid_sequence2)
+      region_name1 = row1["region_name"] 
+      region_name2 = row2["region_name"] 
 
-    if num1 != num2:
-      lev_dist = Levenshtein.distance(covid_nucleic_acid_sequence1,covid_nucleic_acid_sequence2)
+      covid_nucleic_acid_sequence1 = row1["sequence"]
+      covid_nucleic_acid_sequence2 = row2["sequence"]
+
+      lev_dist = Levenshtein.distance(covid_nucleic_acid_sequence1, covid_nucleic_acid_sequence2)
       print()
-      place1 = pick_place_name(covid_nucleic_acid_sequence_definition1)
-      place2 = pick_place_name(covid_nucleic_acid_sequence_definition2)
 
       divider = len(covid_nucleic_acid_sequence1) if len(covid_nucleic_acid_sequence1) > len(covid_nucleic_acid_sequence2) else len(covid_nucleic_acid_sequence2)
       lev_dist = lev_dist / divider
       lev_dist = 1 - lev_dist
       print(lev_dist)
-      s = pd.Series([place1,place2,lev_dist], index=df.columns)
+      s = pd.Series([version1, country_code1, region_name1, version2, country_code2, region_name2, lev_dist], index=dist_df.columns)
       print(s)
-      df = df.append(s, ignore_index=True )
-print(df.sort_values('dist'))
+      dist_df = dist_df.append(s, ignore_index=True )
+print(dist_df)
+print(dist_df.sort_values('dist'))
 
 
