@@ -4,7 +4,7 @@ This is the natural language processing etude, not science.
 
 ## Usage
 
-- this code will run on Python 3.7.3。
+- this code will run on Python 3.7.3.
 
 ```bash
 $ python --version
