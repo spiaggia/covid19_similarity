@@ -11,11 +11,17 @@ $ python --version
 Python 3.7.3
 ```
 
-- setup natural language module
+- install natural language module
 
 ```bash
 $ pip install python-Levenshtein
 ```
+- install graph module
+
+```bash
+pip install networkx
+```
+
 - git clone this repository
 
 ```bash
