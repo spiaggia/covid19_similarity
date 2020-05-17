@@ -26,7 +26,7 @@ def get_region_name(s):
 
 
 sequence_df = pd.DataFrame(columns=['version', 'country_code', 'region_name', 'sequence'])
-dist_df = pd.DataFrame(columns=['version1', 'country_code1', 'region1', 'version2', 'country_code2', 'region2', 'dist'])
+dist_df = pd.DataFrame(columns=['version1', 'country_code1', 'region_name1', 'version2', 'country_code2', 'region_name2', 'dist'])
 
 
 path = 'sequences.fasta'
@@ -46,7 +46,7 @@ covid_nucleic_acid_sequence_array = s.split('>')
 
 covid_nucleic_acid_sequence_array_length = len(covid_nucleic_acid_sequence_array)
 
-for num in range(1,10):
+for num in range(1,1000):
   covid_nucleic_acid_sequence_data = covid_nucleic_acid_sequence_array[num]
   covid_nucleic_acid_sequence_definition = covid_nucleic_acid_sequence_data.splitlines()[0]
   version = covid_nucleic_acid_sequence_definition.split(" ")[0]
@@ -66,10 +66,12 @@ for num in range(1,10):
 pd.set_option('display.max_rows', 3000)
 print(sequence_df)
 
-for index, row1 in sequence_df.iterrows():
+sampled_sequence_df = sequence_df.sample(n=100)
+print(sampled_sequence_df)
+for index, row1 in sampled_sequence_df.iterrows():
   
   version1 = row1.version
-  for index2, row2 in sequence_df.iterrows():
+  for index2, row2 in sampled_sequence_df.iterrows():
     version2 = row2.version
     if version1 != version2:
 
@@ -92,27 +94,34 @@ for index, row1 in sequence_df.iterrows():
       s = pd.Series([version1, country_code1, region_name1, version2, country_code2, region_name2, lev_dist], index=dist_df.columns)
       print(s)
       dist_df = dist_df.append(s, ignore_index=True )
-#print(dist_df)
+print(dist_df)
 #print(dist_df.sort_values('dist'))
 
-network_df = dist_df.groupby('version1').min().reset_index()
+
+ddf = dist_df.groupby('version1')
+network_df = dist_df.loc[ddf['dist'].idxmax(),:]
+#network_df = pd.concat([network_df, dist_df[dist_df['dist'] > dist_df["dist"].quantile(0.8)]])
+network_df = pd.concat([network_df, dist_df[dist_df['dist'] > 0.999]])
+
 print(network_df)
 
 import networkx as nx
 import pandas as pd
 import matplotlib.pyplot as plt
 
+network_df["node1"] =  network_df["version1"] + "-" +  network_df["country_code1"]
+network_df["node2"] =  network_df["version2"] + "-" +  network_df["country_code2"]
 
-feature_1 = network_df["version1"]
-feature_2 = network_df["version2"]
+feature_1 = network_df["node1"]
+feature_2 = network_df["node2"]
 dist = network_df["dist"]
 
 df = pd.DataFrame({'f1': feature_1, 'f2': feature_2, 'score': dist})
 print(df)
 
 G = nx.from_pandas_edgelist(df=df, source='f1', target='f2', edge_attr='score')
-pos = nx.spring_layout(G, k=10)  # For better example looking
+pos = nx.spring_layout(G)  # For better example looking
 nx.draw(G, pos, with_labels=True)
 labels = {e: G.edges[e]['score'] for e in G.edges}
-nx.draw_networkx_edge_labels(G, pos, edge_labels=labels)
+nx.draw_networkx_edge_labels(G, pos, edge_labels=labels, font_size = 6)
 plt.show()
