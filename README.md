@@ -11,6 +11,12 @@ https://www.ncbi.nlm.nih.gov/labs/virus/vssi/#/virus?VirusLineage_ss=Severe%20ac
 
 - Download "Sequence data(FASTA Format) Nucleotide"
 
+- git clone this repository
+
 ```bash
-$ git clone 
+$ git clone https://github.com/spiaggia/covid19_similarity.git
+$ cd covid19_similarity
+# ls
+README.md		results
+covid_similarity.py	sequences.fasta
 ```
