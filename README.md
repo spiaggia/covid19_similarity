@@ -11,3 +11,6 @@ https://www.ncbi.nlm.nih.gov/labs/virus/vssi/#/virus?VirusLineage_ss=Severe%20ac
 
 - Download "Sequence data(FASTA Format) Nucleotide"
 
+```bash
+$ git clone 
+```
