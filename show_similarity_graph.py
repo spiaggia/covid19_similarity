@@ -30,7 +30,7 @@ print(network_df.sort_values("weight"))
 G = nx.from_pandas_edgelist(network_df, edge_attr=True)
 
 plt.figure(figsize=(50,50))
-pos = nx.spring_layout(G, k=0.1)
+pos = nx.spring_layout(G, k=1)
 
 nx.draw_networkx_nodes(G, pos, node_color='w',alpha=0.6, node_size=2)
 nx.draw_networkx_labels(G, pos, fontsize=14, font_family="Yu Gothic", font_weight="bold")
