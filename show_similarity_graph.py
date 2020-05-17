@@ -15,7 +15,7 @@ dist_df = pd.read_csv(get_latest_modified_file_path("results"), index_col=0)
 
 ddf = dist_df.groupby('version1')
 network_df = dist_df
-network_df = network_df[network_df['dist'] > 0.9]
+network_df = network_df[network_df['dist'] > 0.999]
 
 
 
@@ -29,7 +29,7 @@ print(network_df.sort_values("weight"))
 
 G = nx.from_pandas_edgelist(network_df, edge_attr=True)
 
-plt.figure(figsize=(15,15))
+plt.figure(figsize=(50,50))
 pos = nx.spring_layout(G, k=0.1)
 
 nx.draw_networkx_nodes(G, pos, node_color='w',alpha=0.6, node_size=2)
