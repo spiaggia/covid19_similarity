@@ -21,9 +21,7 @@ $ pip install python-Levenshtein
 ```bash
 $ git clone https://github.com/spiaggia/covid19_similarity.git
 $ cd covid19_similarity
-$ ls
-README.md
-covid_similarity.py	sequences.fasta
+
 ```
 
 - Visit Downlod sequence site
@@ -33,8 +31,11 @@ covid_similarity.py	sequences.fasta
 - Check all nucleotides
 
 - Download "Sequence data(FASTA Format) Nucleotide"
-
-
+```bash
+$ ls
+README.md
+covid_similarity.py	sequences.fasta
+```
 
 - execute covid_similarity.py
 
