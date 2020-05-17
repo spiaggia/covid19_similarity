@@ -15,21 +15,17 @@ dist_df = pd.read_csv(get_latest_modified_file_path("results"), index_col=0)
 ddf = dist_df.groupby('version1')
 network_df = dist_df.loc[ddf['dist'].idxmax(),:]
 network_df = pd.concat([network_df, dist_df[dist_df['dist'] > 0.999]])
+# network_df = network_df[network_df['dist'] > 0.9]
 
 print(network_df)
 
 
-network_df["node1"] =  network_df["version1"] + "-" +  network_df["country_code1"]
-network_df["node2"] =  network_df["version2"] + "-" +  network_df["country_code2"]
+network_df["source"] =  network_df["version1"] + "-" +  network_df["country_code1"]
+network_df["target"] =  network_df["version2"] + "-" +  network_df["country_code2"]
+network_df["weight"] =  network_df["dist"]
 
-feature_1 = network_df["node1"]
-feature_2 = network_df["node2"]
-dist = network_df["dist"]
 
-df = pd.DataFrame({'f1': feature_1, 'f2': feature_2, 'score': dist})
-print(df)
-
-G = nx.from_pandas_edgelist(df=df, source='f1', target='f2', edge_attr='score')
+G = nx.from_pandas_edgelist(network_df, edge_attr=True)
 
 plt.figure(figsize=(15,15))
 pos = nx.spring_layout(G, k=0.3)
