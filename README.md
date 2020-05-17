@@ -43,10 +43,15 @@ README.md
 covid_similarity.py	sequences.fasta
 ```
 
-- execute covid_similarity.py
+- calculate similarity each other
 
 ```bash
 $ python covid_similarity.py
+```
+- draw similarity graph
+
+```bash
+$ python show_similarity_graph.py
 ```
 
 # References
