@@ -24,13 +24,13 @@ $ cd covid19_similarity
 
 ```
 
-- Visit Downlod sequence site
+- visit downlod sequence site
 
   - https://www.ncbi.nlm.nih.gov/labs/virus/vssi/#/virus?VirusLineage_ss=Severe%20acute%20respiratory%20syndrome%20coronavirus%202%20(SARS-CoV-2),%20taxid:2697049&SeqType_s=Nucleotide
 
-- Check all nucleotides
+- check all nucleotides
 
-- Download "Sequence data(FASTA Format) Nucleotide"
+- download "Sequence data(FASTA Format) Nucleotide"
 ```bash
 $ ls
 README.md
