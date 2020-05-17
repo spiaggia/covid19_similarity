@@ -20,3 +20,9 @@ $ cd covid19_similarity
 README.md		results
 covid_similarity.py	sequences.fasta
 ```
+
+- execute covid_similarity.py
+
+```bash
+$ python covid_similarity.py
+```
