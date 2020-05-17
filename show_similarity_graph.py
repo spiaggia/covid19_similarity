@@ -1,8 +1,16 @@
+import os
+from glob import glob
 import networkx as nx
 import pandas as pd
 import matplotlib.pyplot as plt
 
-dist_df = pd.read_csv('results/log_20200517_231124.csv', index_col=0)
+def get_latest_modified_file_path(dirname):
+  target = os.path.join(dirname, '*')
+  files = [(f, os.path.getmtime(f)) for f in glob(target)]
+  latest_modified_file_path = sorted(files, key=lambda files: files[1])[-1]
+  return latest_modified_file_path[0]
+
+dist_df = pd.read_csv(get_latest_modified_file_path("results"), index_col=0)
 
 ddf = dist_df.groupby('version1')
 network_df = dist_df.loc[ddf['dist'].idxmax(),:]
