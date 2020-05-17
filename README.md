@@ -19,7 +19,7 @@ $ pip install python-Levenshtein
 - install graph module
 
 ```bash
-pip install networkx
+$ pip install networkx
 ```
 
 - git clone this repository
