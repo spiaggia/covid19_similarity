@@ -42,3 +42,8 @@ covid_similarity.py	sequences.fasta
 ```bash
 $ python covid_similarity.py
 ```
+
+# References
+
+- [Python]文字列の類似度計算3つの手法を実装・比較
+  - http://pixelbeat.jp/text-matching-3-approach-with-python/#toc_id_1
