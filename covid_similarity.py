@@ -2,6 +2,9 @@ import datetime
 import Levenshtein
 import pandas as pd
 
+now = datetime.datetime.now()
+filename = './results/log_' + now.strftime('%Y%m%d_%H%M%S') + '.csv'
+
 def get_country_code(s):
   country_code = "UNKNOWN" 
   list = s.split("/")
@@ -94,7 +97,4 @@ for index, row1 in sampled_sequence_df.iterrows():
       s = pd.Series([version1, country_code1, region_name1, version2, country_code2, region_name2, lev_dist], index=dist_df.columns)
       print(s)
       dist_df = dist_df.append(s, ignore_index=True )
-print(dist_df)
-now = datetime.datetime.now()
-filename = './results/log_' + now.strftime('%Y%m%d_%H%M%S') + '.csv'
-dist_df.to_csv(filename)
+      dist_df.to_csv(filename)

@@ -2,6 +2,7 @@ import os
 from glob import glob
 import networkx as nx
 import pandas as pd
+import numpy as np
 import matplotlib.pyplot as plt
 
 def get_latest_modified_file_path(dirname):
@@ -13,22 +14,23 @@ def get_latest_modified_file_path(dirname):
 dist_df = pd.read_csv(get_latest_modified_file_path("results"), index_col=0)
 
 ddf = dist_df.groupby('version1')
-network_df = dist_df.loc[ddf['dist'].idxmax(),:]
-network_df = pd.concat([network_df, dist_df[dist_df['dist'] > 0.999]])
-# network_df = network_df[network_df['dist'] > 0.9]
+network_df = dist_df
+network_df = network_df[network_df['dist'] > 0.9]
 
-print(network_df)
 
 
 network_df["source"] =  network_df["version1"] + "-" +  network_df["country_code1"]
 network_df["target"] =  network_df["version2"] + "-" +  network_df["country_code2"]
-network_df["weight"] =  network_df["dist"]
+network_df["weight"] =  network_df["dist"] **100 * 100
+
+
+print(network_df.sort_values("weight"))
 
 
 G = nx.from_pandas_edgelist(network_df, edge_attr=True)
 
 plt.figure(figsize=(15,15))
-pos = nx.spring_layout(G, k=0.3)
+pos = nx.spring_layout(G, k=0.1)
 
 nx.draw_networkx_nodes(G, pos, node_color='w',alpha=0.6, node_size=2)
 nx.draw_networkx_labels(G, pos, fontsize=14, font_family="Yu Gothic", font_weight="bold")
