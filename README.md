@@ -27,6 +27,8 @@ $ pip install networkx
 ```bash
 $ git clone https://github.com/spiaggia/covid19_similarity.git
 $ cd covid19_similarity
+$ mkdir results
+$ mkdir images
 
 ```
 
@@ -39,8 +41,8 @@ $ cd covid19_similarity
 - download "Sequence data(FASTA Format) Nucleotide"
 ```bash
 $ ls
-README.md
-covid_similarity.py	sequences.fasta
+README.md			images				sequences.fasta
+covid_similarity.py		results				show_similarity_graph.py
 ```
 
 - calculate similarity each other
