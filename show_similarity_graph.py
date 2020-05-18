@@ -7,7 +7,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 now = datetime.datetime.now()
-filename = './image/log_' + now.strftime('%Y%m%d_%H%M%S') + '.png'
+filename = './images/log_' + now.strftime('%Y%m%d_%H%M%S') + '.png'
 
 def get_latest_modified_file_path(dirname):
   target = os.path.join(dirname, '*')
@@ -48,6 +48,6 @@ nx.draw_networkx_edges(G, pos, alpha=0.4, edge_color='C', width=1)
 
 plt.axis('off')
 plt.savefig(filename)
-os.system('open ' + get_latest_modified_file_path("image"))
+os.system('open ' + get_latest_modified_file_path("images"))
 # plt.show()
 
