@@ -21,7 +21,8 @@ def get_region_name(s):
   region_name = "UNKNOWN" 
   list = s.split("/")
   if "human" in list:
-    region_name = list[list.index("human") + 2][:10]
+    if len(list) > list.index("human") + 3:
+      region_name = list[list.index("human") + 2][:10]
   if "Wuhan" in s:
     region_name = "Wuhan"
   return region_name 
@@ -49,7 +50,7 @@ covid_nucleic_acid_sequence_array = s.split('>')
 
 covid_nucleic_acid_sequence_array_length = len(covid_nucleic_acid_sequence_array)
 
-for num in range(1,1000):
+for num in range(1,len(covid_nucleic_acid_sequence_array)):
   covid_nucleic_acid_sequence_data = covid_nucleic_acid_sequence_array[num]
   covid_nucleic_acid_sequence_definition = covid_nucleic_acid_sequence_data.splitlines()[0]
   version = covid_nucleic_acid_sequence_definition.split(" ")[0]
@@ -69,8 +70,17 @@ for num in range(1,1000):
 pd.set_option('display.max_rows', 3000)
 print(sequence_df)
 
-sampled_sequence_df = sequence_df.sample(n=100)
+print(sequence_df["country_code"].drop_duplicates())
+s = sequence_df["country_code"].drop_duplicates()
+sampled_sequence_df = sequence_df[:1]
+for v in s:
+  print(v)
+  country_sequence_df = sequence_df[sequence_df['country_code'].isin([v])]
+  sampled_sequence_df = pd.concat([sampled_sequence_df, country_sequence_df.sample(n=min([5, len(country_sequence_df)]))])
+
+sampled_sequence_df = sampled_sequence_df.drop_duplicates()
 print(sampled_sequence_df)
+i = 0
 for index, row1 in sampled_sequence_df.iterrows():
   
   version1 = row1.version
@@ -96,5 +106,10 @@ for index, row1 in sampled_sequence_df.iterrows():
       print(lev_dist)
       s = pd.Series([version1, country_code1, region_name1, version2, country_code2, region_name2, lev_dist], index=dist_df.columns)
       print(s)
-      dist_df = dist_df.append(s, ignore_index=True )
-      dist_df.to_csv(filename)
+      dist_df = pd.DataFrame([s])
+      print(dist_df)
+      if i == 0:
+        dist_df.to_csv(filename)
+      else:
+        dist_df.to_csv(filename, mode='a', header=False)
+      i = i + 1
