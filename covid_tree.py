@@ -75,8 +75,8 @@ sampled_sequence_df = sequence_df[:1]
 for v in s:
   print(v)
   country_sequence_df = sequence_df[sequence_df['country_code'].isin([v])]
-  # sampled_sequence_df = pd.concat([sampled_sequence_df, country_sequence_df.sample(n=min([1, len(country_sequence_df)]))])
-sampled_sequence_df = pd.concat([sampled_sequence_df, sequence_df.sample(n=10)])
+  sampled_sequence_df = pd.concat([sampled_sequence_df, country_sequence_df.sample(n=min([2, len(country_sequence_df)]))])
+# sampled_sequence_df = pd.concat([sampled_sequence_df, sequence_df.sample(n=10)])
 
 sampled_sequence_df = sampled_sequence_df.drop_duplicates()
 print(sampled_sequence_df)
@@ -114,9 +114,14 @@ for index, row1 in sorted_sampled_sequence_df.iterrows():
     print(lev_dist)
     s = pd.Series([row1.version, row1.country_code, row1.region_name, row2.version, row2.country_code, row2.region_name, lev_dist], index=dist_df.columns)
     dist_df = pd.concat([dist_df, pd.DataFrame([s])]) 
+  print(dist_df)
+  dist_df = dist_df.reset_index()
   ddf = dist_df.groupby('version1')
+  dddf = dist_df.loc[ddf['dist'].idxmax(),:]
+
+  print(dddf)
   if i == 0:
-    dist_df.loc[ddf['dist'].idxmax(),:].to_csv(filename)
+    dddf.to_csv(filename)
   else:
-    dist_df.loc[ddf['dist'].idxmax(),:].to_csv(filename, mode='a', header=False)
+    dddf.to_csv(filename, mode='a', header=False)
   i = i + 1
