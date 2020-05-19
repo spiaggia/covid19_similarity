@@ -30,7 +30,6 @@ def get_region_name(s):
 
 
 sequence_df = pd.DataFrame(columns=['version', 'country_code', 'region_name', 'sequence'])
-dist_df = pd.DataFrame(columns=['version1', 'country_code1', 'region_name1', 'version2', 'country_code2', 'region_name2', 'dist'])
 
 
 path = 'sequences.fasta'
@@ -76,40 +75,48 @@ sampled_sequence_df = sequence_df[:1]
 for v in s:
   print(v)
   country_sequence_df = sequence_df[sequence_df['country_code'].isin([v])]
-  sampled_sequence_df = pd.concat([sampled_sequence_df, country_sequence_df.sample(n=min([10, len(country_sequence_df)]))])
+  # sampled_sequence_df = pd.concat([sampled_sequence_df, country_sequence_df.sample(n=min([1, len(country_sequence_df)]))])
+sampled_sequence_df = pd.concat([sampled_sequence_df, sequence_df.sample(n=10)])
 
 sampled_sequence_df = sampled_sequence_df.drop_duplicates()
 print(sampled_sequence_df)
+
+original = sampled_sequence_df.iloc[0]
+print(original)
+sampled_sequence_df["dist_from_original"] = 0
+for index, row in sampled_sequence_df.iterrows():
+
+  lev_dist = Levenshtein.distance(original.sequence, row.sequence)
+  print()
+
+  divider = len(original.sequence) if len(original.sequence) > len(row.sequence) else len(row.sequence)
+  lev_dist = lev_dist / divider
+  lev_dist = 1 - lev_dist
+  print(lev_dist)
+
+  sampled_sequence_df.loc[index, "dist_from_original"] = lev_dist 
+
+sorted_sampled_sequence_df = sampled_sequence_df.sort_values("dist_from_original" , ascending=False)
+
+
+
+print(sorted_sampled_sequence_df)
 i = 0
-for index, row1 in sampled_sequence_df.iterrows():
-  
-  version1 = row1.version
-  for index2, row2 in sampled_sequence_df.iterrows():
-    version2 = row2.version
-    if version1 != version2:
+for index, row1 in sorted_sampled_sequence_df.iterrows():
+  dist_df = pd.DataFrame(columns=['version1', 'country_code1', 'region_name1', 'version2', 'country_code2', 'region_name2', 'dist'])
+  for index, row2 in sorted_sampled_sequence_df.query("dist_from_original > " + str(row1.dist_from_original)).iterrows():
+    lev_dist = Levenshtein.distance(row1.sequence, row2.sequence)
+    print()
 
-      country_code1 = row1["country_code"] 
-      country_code2 = row2["country_code"] 
-
-      region_name1 = row1["region_name"] 
-      region_name2 = row2["region_name"] 
-
-      covid_nucleic_acid_sequence1 = row1["sequence"]
-      covid_nucleic_acid_sequence2 = row2["sequence"]
-
-      lev_dist = Levenshtein.distance(covid_nucleic_acid_sequence1, covid_nucleic_acid_sequence2)
-      print()
-
-      divider = len(covid_nucleic_acid_sequence1) if len(covid_nucleic_acid_sequence1) > len(covid_nucleic_acid_sequence2) else len(covid_nucleic_acid_sequence2)
-      lev_dist = lev_dist / divider
-      lev_dist = 1 - lev_dist
-      print(lev_dist)
-      s = pd.Series([version1, country_code1, region_name1, version2, country_code2, region_name2, lev_dist], index=dist_df.columns)
-      print(s)
-      dist_df = pd.DataFrame([s])
-      print(dist_df)
-      if i == 0:
-        dist_df.to_csv(filename)
-      else:
-        dist_df.to_csv(filename, mode='a', header=False)
-      i = i + 1
+    divider = len(row1.sequence) if len(row1.sequence) > len(row2.sequence) else len(row2.sequence)
+    lev_dist = lev_dist / divider
+    lev_dist = 1 - lev_dist
+    print(lev_dist)
+    s = pd.Series([row1.version, row1.country_code, row1.region_name, row2.version, row2.country_code, row2.region_name, lev_dist], index=dist_df.columns)
+    dist_df = pd.concat([dist_df, pd.DataFrame([s])]) 
+  ddf = dist_df.groupby('version1')
+  if i == 0:
+    dist_df.loc[ddf['dist'].idxmax(),:].to_csv(filename)
+  else:
+    dist_df.loc[ddf['dist'].idxmax(),:].to_csv(filename, mode='a', header=False)
+  i = i + 1
