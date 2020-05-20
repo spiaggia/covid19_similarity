@@ -75,7 +75,7 @@ sampled_sequence_df = sequence_df[:1]
 for v in s:
   print(v)
   country_sequence_df = sequence_df[sequence_df['country_code'].isin([v])]
-  sampled_sequence_df = pd.concat([sampled_sequence_df, country_sequence_df.sample(n=min([2, len(country_sequence_df)]))])
+  sampled_sequence_df = pd.concat([sampled_sequence_df, country_sequence_df.sample(n=min([20, len(country_sequence_df)]))])
 # sampled_sequence_df = pd.concat([sampled_sequence_df, sequence_df.sample(n=10)])
 
 sampled_sequence_df = sampled_sequence_df.drop_duplicates()
@@ -96,22 +96,21 @@ for index, row in sampled_sequence_df.iterrows():
 
   sampled_sequence_df.loc[index, "dist_from_original"] = lev_dist 
 
+sampled_sequence_df = sampled_sequence_df.query('dist_from_original > 0.9')
 sorted_sampled_sequence_df = sampled_sequence_df.sort_values("dist_from_original" , ascending=False)
 
 
 
 print(sorted_sampled_sequence_df)
 i = 0
-for index, row1 in sorted_sampled_sequence_df.iterrows():
+for index1, row1 in sorted_sampled_sequence_df.iterrows():
   dist_df = pd.DataFrame(columns=['version1', 'country_code1', 'region_name1', 'version2', 'country_code2', 'region_name2', 'dist'])
-  for index, row2 in sorted_sampled_sequence_df.query("dist_from_original > " + str(row1.dist_from_original)).iterrows():
+  for index2, row2 in sorted_sampled_sequence_df.query("dist_from_original > " + str(row1.dist_from_original)).iterrows():
     lev_dist = Levenshtein.distance(row1.sequence, row2.sequence)
-    print()
-
     divider = len(row1.sequence) if len(row1.sequence) > len(row2.sequence) else len(row2.sequence)
     lev_dist = lev_dist / divider
     lev_dist = 1 - lev_dist
-    print(lev_dist)
+    print(str(index1) + " " + str(index2) + " " + str(lev_dist))
     s = pd.Series([row1.version, row1.country_code, row1.region_name, row2.version, row2.country_code, row2.region_name, lev_dist], index=dist_df.columns)
     dist_df = pd.concat([dist_df, pd.DataFrame([s])]) 
   print(dist_df)

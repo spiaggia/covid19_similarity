@@ -98,16 +98,13 @@ for index, row1 in sampled_sequence_df.iterrows():
       covid_nucleic_acid_sequence2 = row2["sequence"]
 
       lev_dist = Levenshtein.distance(covid_nucleic_acid_sequence1, covid_nucleic_acid_sequence2)
-      print()
 
       divider = len(covid_nucleic_acid_sequence1) if len(covid_nucleic_acid_sequence1) > len(covid_nucleic_acid_sequence2) else len(covid_nucleic_acid_sequence2)
       lev_dist = lev_dist / divider
       lev_dist = 1 - lev_dist
-      print(lev_dist)
+      print(str(index) + " " + str(index2) + " " + str(lev_dist))
       s = pd.Series([version1, country_code1, region_name1, version2, country_code2, region_name2, lev_dist], index=dist_df.columns)
-      print(s)
       dist_df = pd.DataFrame([s])
-      print(dist_df)
       if i == 0:
         dist_df.to_csv(filename)
       else:
