@@ -55,7 +55,7 @@ $ python show_similarity_graph.py
 - calculate tree structre and draw graph
 
 ```bash
-$ python covid_similarity.py
+$ python covid_tree.py
 $ python show_similarity_graph.py
 ```
 
