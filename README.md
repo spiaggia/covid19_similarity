@@ -45,14 +45,17 @@ README.md			images				sequences.fasta
 covid_similarity.py		results				show_similarity_graph.py
 ```
 
-- calculate similarity each other
+- calculate similarity each other and draw graph
 
 ```bash
 $ python covid_similarity.py
+$ python show_similarity_graph.py
 ```
-- draw similarity graph
+
+- calculate tree structre and draw graph
 
 ```bash
+$ python covid_similarity.py
 $ python show_similarity_graph.py
 ```
 
